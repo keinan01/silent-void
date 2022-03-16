@@ -23,20 +23,24 @@ namespace Silent_Void
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
         List<Entity> planes;
         SpriteFont font;
-        Texture2D bg;
+        Texture2D bg, systemBg, arrow;
         Texture2D playerTex;
         public Texture2D bullet;
         Vector2 screen, cameraPos;
         float rotationRadians = 0f;
         MouseState mouseState;
+        Vector2 arrowPos;
+        int arrowCycle;
         Enemy villain;
         GameState gameState = GameState.LevelWorld;
         int enemySpawnCooldown;
+        List<int> coords = new List<int>();
         public Game1()
         {
             this.Window.AllowUserResizing = true;
@@ -46,7 +50,7 @@ namespace Silent_Void
             Content.RootDirectory = "Content";
 
             graphics.PreferredBackBufferWidth = 1920;
-            graphics.IsFullScreen = true;
+            //graphics.IsFullScreen = true;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
         }
@@ -64,7 +68,7 @@ namespace Silent_Void
             Entity.game = this;
             screen = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             enemySpawnCooldown = 0;
-            
+            arrowCycle = 0;
             base.Initialize();
         }
 
@@ -81,10 +85,15 @@ namespace Silent_Void
             bullet = this.Content.Load<Texture2D>("bullet");
             Entity.player = player = new Player(playerTex, screen / 2, rotationRadians);
             planes = new Entity[] { player }.ToList();
+            arrow = this.Content.Load<Texture2D>("arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
+            systemBg = this.Content.Load<Texture2D>("sair conglomerate");
+                      
+            coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
+            arrowPos = new Vector2(coords[0], coords[1]);
             villain = new OpEnemy(playerTex, new Vector2(200, 200), 1f);
             planes.Add(villain);
-            for(int i = 0; i < 50; i++)
+            for (int i = 0; i < 50; i++)
             {
                 planes.Add(new OpEnemy(playerTex, new Vector2(200, 200), 1f));
             }
@@ -99,20 +108,51 @@ namespace Silent_Void
         {
             // TODO: Unload any non ContentManager content here
         }
-
+        
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
+
         {
-            
+            KeyboardState key = Keyboard.GetState();
 
             mouseState = Mouse.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
+            if(gameState == GameState.Overworld)
+            {
+                
+                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
+                {
+                    gameState = GameState.LevelWorld;
+                }
+                if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
+                {
+                    arrowCycle += 2;
+                    
+                    if (arrowCycle > coords.Count - 4)
+                    {
+                        arrowCycle = 0;
+                    }
+                    Debug.WriteLine(coords[arrowCycle] + ", "+ coords[arrowCycle + 1]);
+                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
+                }
+                if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
+                {
+                    arrowCycle -= 2;
+                    
+                    if (arrowCycle < 0)
+                    {
+                        arrowCycle = coords.Count - 4;
+                    }
+                    Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
+                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
+                }
+            }
             if (gameState == GameState.LevelWorld)
             {
                 for (int i = 0; i < planes.Count; i++)
@@ -140,9 +180,13 @@ namespace Silent_Void
 
                     }
                 }
+                if (key.IsKeyDown(Keys.Back))
+                {
+                    gameState = GameState.Overworld;
+                }
             }
             // TODO: Add your update logic here
-            
+            oldkey = key;
 
             base.Update(gameTime);
         }
@@ -162,12 +206,22 @@ namespace Silent_Void
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            spriteBatch.Draw(bg, new Rectangle(0, 0, (int) screen.X, (int) screen.Y), Color.White);
-            for (int i = 0; i < planes.Count; i++)
+            if (gameState == GameState.Overworld)
             {
-                planes[i].Draw(spriteBatch, cameraPos);
+                
+                spriteBatch.Draw(systemBg, new Rectangle(0, 0, 1920, 1080), Color.White);
+                spriteBatch.Draw(arrow, new Rectangle((int) arrowPos.X, (int) arrowPos.Y, 50, 50), Color.White);
             }
-            spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
+            if (gameState == GameState.LevelWorld)
+            {
+                spriteBatch.Draw(bg, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.White);
+                for (int i = 0; i < planes.Count; i++)
+                {
+                    planes[i].Draw(spriteBatch, cameraPos);
+                }
+                spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
+            }
+            
             
             spriteBatch.End();
             base.Draw(gameTime);
