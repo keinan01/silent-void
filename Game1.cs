@@ -82,8 +82,12 @@ namespace Silent_Void
             Entity.player = player = new Player(playerTex, screen / 2, rotationRadians);
             planes = new Entity[] { player }.ToList();
             font = this.Content.Load<SpriteFont>("SpriteFont1");
-            villain = new Enemy(playerTex, new Vector2(200, 200), 1f);
+            villain = new OpEnemy(playerTex, new Vector2(200, 200), 1f);
             planes.Add(villain);
+            for(int i = 0; i < 50; i++)
+            {
+                planes.Add(new OpEnemy(playerTex, new Vector2(200, 200), 1f));
+            }
             // TODO: use this.Content to load your game content here
         }
 

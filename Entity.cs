@@ -40,8 +40,7 @@ namespace Silent_Void
         }
         public bool collides(Entity other)
         {
-            return new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y).Intersects(new Rectangle((int)other.pos.X, (int)other.pos.Y, (int)other.size.X, (int)other.size.Y));
-
+            return new Rectangle((int)pos.X + 4, (int)pos.Y + 4, (int)size.X - 4, (int)size.Y - 4).Intersects(new Rectangle((int)other.pos.X + 4, (int)other.pos.Y + 4, (int)other.size.X - 4, (int)other.size.Y - 4));
         }
     }
 }

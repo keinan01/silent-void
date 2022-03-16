@@ -31,7 +31,7 @@ namespace Silent_Void
             isBullet = false;
             points = 0;
             vel = new Vector2(0, 0);
-            
+
         }
         public override void Update()
         {
@@ -46,7 +46,7 @@ namespace Silent_Void
             //vel = -new Vector2((float)Math.Cos(rad), (float)Math.Sin(rad)) * 5;
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
-            
+
             {
                 vel.Y -= acc;
             }
@@ -61,7 +61,7 @@ namespace Silent_Void
                 vel.Y += acc;
             }
 
-            if(vel.LengthSquared() > speed*speed)
+            if (vel.LengthSquared() > speed * speed)
             {
                 vel.Normalize();
                 vel *= speed;
@@ -96,7 +96,7 @@ namespace Silent_Void
 
             if (mouseState.LeftButton == ButtonState.Pressed && cooldown >= reload)
             {
-                Shoot(pos, rad, true, vel);
+                Shoot(pos, rad, true);
                 cooldown = 0;
             }
             cooldown++;
@@ -104,11 +104,9 @@ namespace Silent_Void
             base.Update();
         }
 
-        public void Shoot(Vector2 pos, float rad, bool friendly, Vector2 vel)
+        public void Shoot(Vector2 pos, float rad, bool friendly)
         {
-            game.Add(new Projectile(game.bullet, pos, rad, friendly, vel));
+            game.Add(new Projectile(game.bullet, pos, rad, friendly, 15));
         }
-
-
     }
 }

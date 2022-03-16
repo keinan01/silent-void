@@ -14,7 +14,7 @@ namespace Silent_Void
     class Projectile : Entity
     {
 
-        public Projectile(Texture2D tex, Vector2 pos, float rad, bool friendly, Vector2 vel)
+        public Projectile(Texture2D tex, Vector2 pos, float rad, bool friendly, float speed)
         {
             base.colour = Color.White;
             base.tex = tex;
@@ -24,17 +24,29 @@ namespace Silent_Void
             base.friendly = friendly;
             isBullet = true;
 
-            this.vel = vel -new Vector2((float)Math.Cos(rad), (float)Math.Sin(rad)) * 15;
+            this.vel = vel -new Vector2((float)Math.Cos(rad), (float)Math.Sin(rad)) * speed;
         }
         public override void Update()
         {
 
-            if ((player.pos - pos).Length() > 2000)
+            if (pos.X < 0)
+            {
+                removed = true;
+            }
+            if (pos.X > 1920)
+            {
+                removed = true;
+            }
+            if (pos.Y < 0)
+            {
+                removed = true;
+            }
+            if (pos.Y > 1080)
             {
                 removed = true;
             }
 
-            base.Update();
+                base.Update();
         }
     }
 }

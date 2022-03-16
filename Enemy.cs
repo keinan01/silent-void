@@ -11,60 +11,86 @@ namespace Silent_Void
     class Enemy : Entity
     {
         public static Random rnd = new Random();
-        float baseAng;
-        int reload = 1000;
-        int cooldown = rnd.Next(1000);
-
+        public int reload = 200;
+        public int cooldown = rnd.Next(200);
+        int speed = 5;
+        float acc = 0.1f;
+        double deviance = 0;
         public Enemy(Texture2D tex, Vector2 pos, float rad)
         {
             base.tex = tex;
             base.size = new Vector2(72, 72);
             base.pos = pos;
             base.rad = rad;
-            baseAng = rad;
             base.colour = new Color(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             friendly = false;
             isBullet = false;
         }
         public override void Update()
         {
-            double a = (rad % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-
-            double b = baseAng;
-            if ((player.pos - pos).Length() < 500)
+            Vector2 target = player.pos - pos;
+            rad = (float)(Math.Atan2(target.Y, target.X) + Math.PI);
+            if ((player.pos - pos).Length() < 350)
             {
-                b = Math.Atan2((pos - player.pos).Y, (pos - player.pos).X);
+                target = pos - player.pos;
+            }
+            if ((player.pos - pos).Length() < 350 || (player.pos - pos).Length() > 450)
+            {
+                double ang = Math.Atan2(target.Y, target.X);
+                deviance += (rnd.NextDouble() - 0.5) * Math.PI / 6;
+                if (deviance > Math.PI / 2)
+                {
+                    deviance = Math.PI / 2;
+                }
+                if (deviance < -Math.PI / 2)
+                {
+                    deviance = -Math.PI / 2;
+                }
+                ang += deviance;
+
+                vel += new Vector2((float)Math.Cos(ang) * acc, (float)Math.Sin(ang) * acc);
             }
 
-            if ((b - a + 3 * Math.PI) % (2 * Math.PI) - Math.PI > 0.1)
+            if (vel.LengthSquared() > speed * speed)
             {
-                rad += (float)Math.PI / 100;
-            }
-            else if ((b - a + 3 * Math.PI) % (2 * Math.PI) - Math.PI < -0.1)
-            {
-                rad -= (float)Math.PI / 100;
-            }
-            vel = -new Vector2((float)Math.Cos(rad), (float)Math.Sin(rad)) * 2;
-
-            if ((player.pos - pos).Length() > 2000)
-            {
-                removed = true;
+                vel.Normalize();
+                vel *= speed;
             }
 
             if (cooldown >= reload)
             {
-                Shoot(pos, rad, false, vel);
+                Shoot(pos, rad, false);
                 cooldown = 0;
             }
 
-          cooldown++;
+            cooldown++;
+
+            if (pos.X < 0)
+            {
+                pos.X = 0;
+                vel.X = -vel.X;
+            }
+            if (pos.X > 1920)
+            {
+                pos.X = 1920;
+                vel.X = -vel.X;
+            }
+            if (pos.Y < 0)
+            {
+                pos.Y = 0;
+                vel.Y = -vel.Y;
+            }
+            if (pos.Y > 1080)
+            {
+                pos.Y = 1080;
+                vel.Y = -vel.Y;
+            }
 
             base.Update();
         }
-        public void Shoot(Vector2 pos, float rad, bool friendly, Vector2 vel)
+        public virtual void Shoot(Vector2 pos, float rad, bool friendly)
         {
-            game.Add(new Projectile(game.bullet, pos, rad, friendly, vel));
+            game.Add(new Projectile(game.bullet, pos, rad, friendly, 15));
         }
-
     }
 }
