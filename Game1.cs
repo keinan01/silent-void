@@ -24,13 +24,14 @@ namespace Silent_Void
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        SoundEffect sfxShot;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
         List<Entity> planes;
         SpriteFont font;
-        Texture2D bg, systemBg, arrow;
+        Texture2D bg, systemBg, arrow, deathBg;
         Texture2D playerTex;
         public Texture2D bullet;
         Vector2 screen, cameraPos;
@@ -90,12 +91,13 @@ namespace Silent_Void
             arrow = this.Content.Load<Texture2D>("arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
             systemBg = this.Content.Load<Texture2D>("sair conglomerate");
-            
+            deathBg = this.Content.Load<Texture2D>("deadth screen");
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
             arrowPos = new Vector2(coords[0], coords[1]);
             villain = new OpEnemy(playerTex, new Vector2(200, 200), 1f);
             planes.Add(villain);
-            for (int i = 0; i < 50; i++)
+            sfxShot = this.Content.Load<SoundEffect>("gunshot");
+            for (int i = 0; i < 5; i++)
             {
                 planes.Add(new OpEnemy(playerTex, new Vector2(200, 200), 1f));
             }
@@ -159,6 +161,7 @@ namespace Silent_Void
             {
                 if (player.removed)
                 {
+                    sfxShot.Play();
                     gameState = GameState.YouDied;
                     
 
@@ -170,7 +173,7 @@ namespace Silent_Void
                     {
                         if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly)
                         {
-
+                            //sfxShot.Play();
                             planes[i].removed = true;
                             planes[j].removed = true;
                             player.points += 100;
@@ -185,7 +188,7 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
-                        
+                        sfxShot.Play();
                         planes.RemoveAt(i);
 
                     }
@@ -234,7 +237,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.YouDied)
             {
-                spriteBatch.DrawString(font,"You Died", new Vector2(250, 250), Color.White);
+                spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
 
             spriteBatch.End();
