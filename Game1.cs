@@ -157,6 +157,12 @@ namespace Silent_Void
             }
             if (gameState == GameState.LevelWorld)
             {
+                if (player.removed)
+                {
+                    gameState = GameState.YouDied;
+                    
+
+                }
                 for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Update();
@@ -179,10 +185,11 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
-                        gameState = GameState.YouDied;
+                        
                         planes.RemoveAt(i);
 
                     }
+                    
                 }
                 if (key.IsKeyDown(Keys.Back))
                 {
