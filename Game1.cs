@@ -19,7 +19,8 @@ namespace Silent_Void
     {
         LevelWorld,
         Overworld,
-        Shop
+        Shop,
+        YouDied
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
@@ -40,6 +41,7 @@ namespace Silent_Void
         Enemy villain;
         GameState gameState = GameState.LevelWorld;
         int enemySpawnCooldown;
+        
         List<int> coords = new List<int>();
         public Game1()
         {
@@ -88,7 +90,7 @@ namespace Silent_Void
             arrow = this.Content.Load<Texture2D>("arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
             systemBg = this.Content.Load<Texture2D>("sair conglomerate");
-                      
+            
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
             arrowPos = new Vector2(coords[0], coords[1]);
             villain = new OpEnemy(playerTex, new Vector2(200, 200), 1f);
@@ -162,6 +164,7 @@ namespace Silent_Void
                     {
                         if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly)
                         {
+
                             planes[i].removed = true;
                             planes[j].removed = true;
                             player.points += 100;
@@ -176,6 +179,7 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
+                        gameState = GameState.YouDied;
                         planes.RemoveAt(i);
 
                     }
@@ -221,8 +225,11 @@ namespace Silent_Void
                 }
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
-            
-            
+            if (gameState == GameState.YouDied)
+            {
+                spriteBatch.DrawString(font,"You Died", new Vector2(250, 250), Color.White);
+            }
+
             spriteBatch.End();
             base.Draw(gameTime);
         }
