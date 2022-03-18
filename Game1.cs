@@ -219,7 +219,10 @@ namespace Silent_Void
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.Deferred,
+                  BlendState.AlphaBlend,
+                  SamplerState.PointClamp,
+                  null, null, null);
             if (gameState == GameState.Overworld)
             {
                 

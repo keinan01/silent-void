@@ -31,7 +31,7 @@ namespace Silent_Void
         public void Draw(SpriteBatch spriteBatch, Vector2 shift)
         {
             Vector2 origin = new Vector2(tex.Bounds.Width / 2, tex.Bounds.Height / 2);
-            spriteBatch.Draw(tex, new Rectangle((int)(pos.X + shift.X), (int)(pos.Y + shift.Y), (int)size.X, (int)size.Y), null, colour, rad, origin, SpriteEffects.None, 0f);
+            spriteBatch.Draw(tex, new Rectangle((int)(pos.X + shift.X), (int)(pos.Y + shift.Y), (int)size.X, (int)size.Y), null, colour, rad - (float)Math.PI / 2, origin, SpriteEffects.None, 0f);
         }
 
         public virtual void Update()
