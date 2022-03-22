@@ -23,6 +23,7 @@ namespace Silent_Void
         public static Entity player;
         public bool friendly;
         public bool isBullet;
+        //public bool isDead;
         public Entity()
         {
 

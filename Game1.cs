@@ -20,7 +20,9 @@ namespace Silent_Void
         LevelWorld,
         Overworld,
         Shop,
-        YouDied
+        YouDied,
+        TitleScreen,
+        EndLevel
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
@@ -31,7 +33,9 @@ namespace Silent_Void
         Player player;
         List<Entity> planes;
         SpriteFont font;
-        Texture2D bg, systemBg, arrow, deathBg;
+
+
+        Texture2D bg, systemBg, arrow, deathBg, titleBg;
         Texture2D playerTex;
         public Texture2D bullet;
         Vector2 screen, cameraPos;
@@ -40,9 +44,9 @@ namespace Silent_Void
         Vector2 arrowPos;
         int arrowCycle;
         Enemy villain;
-        GameState gameState = GameState.LevelWorld;
+        GameState gameState = GameState.TitleScreen;
         int enemySpawnCooldown;
-        
+
         List<int> coords = new List<int>();
         public Game1()
         {
@@ -85,17 +89,25 @@ namespace Silent_Void
             spriteBatch = new SpriteBatch(GraphicsDevice);
             playerTex = this.Content.Load<Texture2D>("player");
             bg = this.Content.Load<Texture2D>("bg");
+
+            titleBg = this.Content.Load<Texture2D>("title screen");
             bullet = this.Content.Load<Texture2D>("bullet");
+
             Entity.player = player = new Player(playerTex, screen / 2, rotationRadians);
             planes = new Entity[] { player }.ToList();
+
             arrow = this.Content.Load<Texture2D>("arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
+
             systemBg = this.Content.Load<Texture2D>("sair conglomerate");
             deathBg = this.Content.Load<Texture2D>("deadth screen");
+
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
             arrowPos = new Vector2(coords[0], coords[1]);
+
             villain = new OpEnemy(playerTex, new Vector2(200, 200), 1f);
             planes.Add(villain);
+
             sfxShot = this.Content.Load<SoundEffect>("gunshot");
             for (int i = 0; i < 5; i++)
             {
@@ -112,7 +124,7 @@ namespace Silent_Void
         {
             // TODO: Unload any non ContentManager content here
         }
-        
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -127,9 +139,16 @@ namespace Silent_Void
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-            if(gameState == GameState.Overworld)
+            if (gameState == GameState.TitleScreen)
             {
-                
+                if (key.IsKeyDown(Keys.Enter))
+                {
+                    gameState = GameState.LevelWorld;
+                }
+            }
+            if (gameState == GameState.Overworld)
+            {
+
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
                     gameState = GameState.LevelWorld;
@@ -137,18 +156,18 @@ namespace Silent_Void
                 if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
                 {
                     arrowCycle += 2;
-                    
+
                     if (arrowCycle > coords.Count - 4)
                     {
                         arrowCycle = 0;
                     }
-                    Debug.WriteLine(coords[arrowCycle] + ", "+ coords[arrowCycle + 1]);
+                    Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
                 if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
                 {
                     arrowCycle -= 2;
-                    
+
                     if (arrowCycle < 0)
                     {
                         arrowCycle = coords.Count - 4;
@@ -163,7 +182,7 @@ namespace Silent_Void
                 {
                     sfxShot.Play();
                     gameState = GameState.YouDied;
-                    
+
 
                 }
                 for (int i = 0; i < planes.Count; i++)
@@ -190,10 +209,19 @@ namespace Silent_Void
                     {
                         sfxShot.Play();
                         planes.RemoveAt(i);
-
+                       
                     }
-                    
+
                 }
+                if (planes.All(planes => planes.friendly))
+                {
+                    gameState = GameState.EndLevel;
+
+                }
+                //if (planes.Count <= 1)
+                //{
+                    
+                //}
                 if (key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;
@@ -223,11 +251,15 @@ namespace Silent_Void
                   BlendState.AlphaBlend,
                   SamplerState.PointClamp,
                   null, null, null);
+            if (gameState == GameState.TitleScreen)
+            {
+                spriteBatch.Draw(titleBg, new Rectangle(0, 0, 1920, 1080), Color.White);
+            }
             if (gameState == GameState.Overworld)
             {
-                
+
                 spriteBatch.Draw(systemBg, new Rectangle(0, 0, 1920, 1080), Color.White);
-                spriteBatch.Draw(arrow, new Rectangle((int) arrowPos.X, (int) arrowPos.Y, 50, 50), Color.White);
+                spriteBatch.Draw(arrow, new Rectangle((int)arrowPos.X, (int)arrowPos.Y, 50, 50), Color.White);
             }
             if (gameState == GameState.LevelWorld)
             {
@@ -242,11 +274,17 @@ namespace Silent_Void
             {
                 spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
-
+            if (gameState == GameState.EndLevel)
+            {
+                //spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.DrawString(font, "Level End!!!", new Vector2(1920 / 2, 1080 / 2), Color.White);
+                spriteBatch.DrawString(font, player.points.ToString(), new Vector2(1920 / 2, (1080 / 2) + 50), Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
 
-        
+
     }
 }
