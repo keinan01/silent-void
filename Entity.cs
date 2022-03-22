@@ -23,7 +23,6 @@ namespace Silent_Void
         public static Entity player;
         public bool friendly;
         public bool isBullet;
-        //public bool isDead;
         public Entity()
         {
 
@@ -41,7 +40,7 @@ namespace Silent_Void
         }
         public bool collides(Entity other)
         {
-            return new Rectangle((int)pos.X + 4, (int)pos.Y + 4, (int)size.X - 4, (int)size.Y - 4).Intersects(new Rectangle((int)other.pos.X + 4, (int)other.pos.Y + 4, (int)other.size.X - 4, (int)other.size.Y - 4));
+            return new Rectangle((int)pos.X + 10, (int)pos.Y + 10, (int)size.X - 20, (int)size.Y - 20).Intersects(new Rectangle((int)other.pos.X + 10, (int)other.pos.Y + 10, (int)other.size.X - 20, (int)other.size.Y - 20));
         }
     }
 }

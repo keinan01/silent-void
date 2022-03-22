@@ -14,14 +14,15 @@ namespace Silent_Void
 {
     class OpEnemy : Enemy
     {
-        public OpEnemy(Texture2D tex, Vector2 pos, float rad) : base(tex, pos, rad)
+        public static new Texture2D texture;
+        public OpEnemy(Vector2 pos, float rad) : base(texture, pos, rad)
         {
             base.cooldown = rnd.Next(20);
             base.reload = 20;
         }
         public override void Shoot(Vector2 pos, float rad, bool friendly)
         {
-            game.Add(new Projectile(game.bullet, pos , rad + (float)(rnd.NextDouble() - 0.5), friendly, 10));
+            game.Add(new Projectile(game.enemyBullet, pos , rad + (float)(rnd.NextDouble() - 0.5), friendly, 10));
         }
     }
 }

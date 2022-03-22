@@ -11,21 +11,26 @@ namespace Silent_Void
     class Enemy : Entity
     {
         public static Random rnd = new Random();
+        public static Texture2D texture;
         public int reload = 200;
         public int cooldown = rnd.Next(200);
         int speed = 5;
         float acc = 0.1f;
         double deviance = 0;
+        public Enemy(Vector2 pos, float rad) : this(texture, pos, rad)
+        {
+        }
         public Enemy(Texture2D tex, Vector2 pos, float rad)
         {
+            base.colour = Color.White;
             base.tex = tex;
             base.size = new Vector2(72, 72);
             base.pos = pos;
             base.rad = rad;
-            base.colour = new Color(rnd.Next(256), rnd.Next(256), rnd.Next(256));
             friendly = false;
             isBullet = false;
         }
+
         public override void Update()
         {
             Vector2 target = player.pos - pos;
@@ -90,7 +95,7 @@ namespace Silent_Void
         }
         public virtual void Shoot(Vector2 pos, float rad, bool friendly)
         {
-            game.Add(new Projectile(game.bullet, pos, rad, friendly, 15));
+            game.Add(new Projectile(game.enemyBullet, pos, rad, friendly, 15));
         }
     }
 }

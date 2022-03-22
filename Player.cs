@@ -13,8 +13,7 @@ namespace Silent_Void
 
 {
     class Player : Entity
-    {
-        public Vector2 cameraPos;
+    { 
         int cooldown = 0;
         int reload = 10;
         public int points;
@@ -37,7 +36,7 @@ namespace Silent_Void
         {
             MouseState mouseState = Mouse.GetState();
 
-            Vector2 mousePosition = new Vector2(mouseState.X, mouseState.Y) - cameraPos;
+            Vector2 mousePosition = new Vector2(mouseState.X, mouseState.Y);
 
             Vector2 dPos = this.pos - mousePosition;
 
