@@ -31,9 +31,9 @@ namespace Silent_Void
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
-        List<Entity> planes;
+        public List<Entity> planes;
         SpriteFont font;
-        Texture2D bg, systemBg, arrow, deathBg, titleBg;
+        Texture2D bg, systemBg, arrow, deathBg, titleBg, overlay;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
         Vector2 screen;
@@ -85,6 +85,8 @@ namespace Silent_Void
             playerTex = this.Content.Load<Texture2D>("player");
             Enemy.texture = this.Content.Load<Texture2D>("spitter");
             OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
+            Spider.texture = this.Content.Load<Texture2D>("spitter");
+            MamaSpider.texture = this.Content.Load<Texture2D>("spitter");
             bg = this.Content.Load<Texture2D>("bg");
 
             titleBg = this.Content.Load<Texture2D>("title screen");
@@ -98,6 +100,8 @@ namespace Silent_Void
             systemBg = this.Content.Load<Texture2D>("sair conglomerate");
             deathBg = this.Content.Load<Texture2D>("deadth screen");
 
+            overlay = new Texture2D(GraphicsDevice, 1, 1);
+            overlay.SetData(new Color[] { Color.White });
 
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
             arrowPos = new Vector2(coords[0], coords[1]);
@@ -108,7 +112,7 @@ namespace Silent_Void
             }
             for (int i = 0; i < 3; i++)
             {
-                planes.Add(new Enemy(new Vector2(200, 200), 1f));
+                planes.Add(new MamaSpider(new Vector2(200, 200), 1f));
             }
             // TODO: use this.Content to load your game content here
         }
@@ -185,15 +189,20 @@ namespace Silent_Void
                 for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Update();
-                    for (int j = 0; j < planes.Count; j++)
+                    for (int j = i+1; j < planes.Count; j++)
                     {
-                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly)
+                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && !(planes[i].invincible || planes[j].invincible) && planes[i].friendly != planes[j].friendly)
                         {
                             //sfxShot.Play();
-                            planes[i].removed = true;
-                            planes[j].removed = true;
+                            planes[i].OnHit();
+                            planes[j].OnHit();
                             player.points += 100;
                         }
+                    }
+                    if (planes[i].hp <= 0)
+                    {
+                        planes[i].removed = true;
+                        planes[i].OnDeath();
                     }
                 }
 
@@ -266,6 +275,7 @@ namespace Silent_Void
                 {
                     planes[i].Draw(spriteBatch, new Vector2(0,0));
                 }
+                spriteBatch.Draw(overlay, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.Red * player.hurtTransparency);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
             if (gameState == GameState.YouDied)

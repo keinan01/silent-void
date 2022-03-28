@@ -14,7 +14,7 @@ namespace Silent_Void
 {
     public class Entity
     {
-        public Vector2 pos, vel, size;
+        public Vector2 pos, vel, size, hitBoxSize;
         public Texture2D tex;
         public Color colour;
         public float rad;
@@ -23,9 +23,11 @@ namespace Silent_Void
         public static Entity player;
         public bool friendly;
         public bool isBullet;
+        public int hp;
+        public bool invincible = false;
         public Entity()
         {
-
+            hitBoxSize = new Vector2(0, 0);
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 shift)
@@ -38,9 +40,20 @@ namespace Silent_Void
         {
             pos += vel;
         }
+
+        public virtual void OnHit()
+        {
+            hp--;
+        }
+
+
+        public virtual void OnDeath()
+        {
+        }
+
         public bool collides(Entity other)
         {
-            return new Rectangle((int)pos.X + 10, (int)pos.Y + 10, (int)size.X - 20, (int)size.Y - 20).Intersects(new Rectangle((int)other.pos.X + 10, (int)other.pos.Y + 10, (int)other.size.X - 20, (int)other.size.Y - 20));
+            return new Rectangle((int)(pos.X - hitBoxSize.X/2), (int)(pos.Y - hitBoxSize.Y / 2), (int)hitBoxSize.X, (int)hitBoxSize.Y - 20).Intersects(new Rectangle((int)(other.pos.X - other.hitBoxSize.X / 2), (int)(other.pos.Y - other.hitBoxSize.Y / 2), (int)other.hitBoxSize.X, (int)other.hitBoxSize.Y));
         }
     }
 }

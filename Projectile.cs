@@ -19,9 +19,11 @@ namespace Silent_Void
             base.colour = Color.White;
             base.tex = tex;
             size = new Vector2(25, 25);
+            hitBoxSize = size - new Vector2(10, 10);
             base.pos = pos;
             base.rad = rad;
             base.friendly = friendly;
+            base.hp = 1;
             isBullet = true;
 
             this.vel = vel -new Vector2((float)Math.Cos(rad), (float)Math.Sin(rad)) * speed;

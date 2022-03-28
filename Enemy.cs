@@ -27,6 +27,8 @@ namespace Silent_Void
             base.size = new Vector2(72, 72);
             base.pos = pos;
             base.rad = rad;
+            base.hp = 3;
+            hitBoxSize = size - new Vector2(10, 10);
             friendly = false;
             isBullet = false;
         }
