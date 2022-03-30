@@ -1,3 +1,5 @@
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +28,14 @@ namespace Silent_Void
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        SoundEffect sfxShot;
+        public SoundEffect sfxShot;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
         public List<Entity> planes;
         SpriteFont font;
-        Texture2D bg, systemBg, arrow, deathBg, titleBg, overlay;
+        Texture2D bg, systemBg, arrow, deathBg, titleBg;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
         Vector2 screen;
@@ -42,7 +44,9 @@ namespace Silent_Void
         Vector2 arrowPos;
         int arrowCycle;
         GameState gameState = GameState.TitleScreen;
-        
+
+        private Level level;
+
         List<int> coords = new List<int>();
         public Game1()
         {
@@ -72,6 +76,13 @@ namespace Silent_Void
             screen = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             arrowCycle = 0;
             base.Initialize();
+
+            
+        }
+
+        private void CreateLevel(String path)
+        {
+            level = new Level(Services, path, this);
         }
 
         /// <summary>
@@ -85,9 +96,9 @@ namespace Silent_Void
             playerTex = this.Content.Load<Texture2D>("player");
             Enemy.texture = this.Content.Load<Texture2D>("spitter");
             OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
-            Spider.texture = this.Content.Load<Texture2D>("spitter");
-            MamaSpider.texture = this.Content.Load<Texture2D>("spitter");
             bg = this.Content.Load<Texture2D>("bg");
+
+            CreateLevel(@"Content\levels\level01.txt");
 
             titleBg = this.Content.Load<Texture2D>("title screen");
 
@@ -100,20 +111,20 @@ namespace Silent_Void
             systemBg = this.Content.Load<Texture2D>("sair conglomerate");
             deathBg = this.Content.Load<Texture2D>("deadth screen");
 
-            overlay = new Texture2D(GraphicsDevice, 1, 1);
-            overlay.SetData(new Color[] { Color.White });
 
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("gunshot");
-            for (int i = 0; i < 1; i++)
-            {
-                planes.Add(new OpEnemy(new Vector2(200, 200), 1f));
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                planes.Add(new MamaSpider(new Vector2(200, 200), 1f));
-            }
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    planes.Add(new OpEnemy(new Vector2(200, 200), 1f));
+            //}
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    planes.Add(new Enemy(new Vector2(200, 200), 1f));
+            //}
+
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -125,7 +136,7 @@ namespace Silent_Void
         {
             // TODO: Unload any non ContentManager content here
         }
-        
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -149,7 +160,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.Overworld)
             {
-                
+
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
                     gameState = GameState.LevelWorld;
@@ -157,18 +168,18 @@ namespace Silent_Void
                 if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
                 {
                     arrowCycle += 2;
-                    
+
                     if (arrowCycle > coords.Count - 4)
                     {
                         arrowCycle = 0;
                     }
-                    Debug.WriteLine(coords[arrowCycle] + ", "+ coords[arrowCycle + 1]);
+                    Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
                 if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
                 {
                     arrowCycle -= 2;
-                    
+
                     if (arrowCycle < 0)
                     {
                         arrowCycle = coords.Count - 4;
@@ -189,20 +200,15 @@ namespace Silent_Void
                 for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Update();
-                    for (int j = i+1; j < planes.Count; j++)
+                    for (int j = 0; j < planes.Count; j++)
                     {
-                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && !(planes[i].invincible || planes[j].invincible) && planes[i].friendly != planes[j].friendly)
+                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly)
                         {
                             //sfxShot.Play();
-                            planes[i].OnHit();
-                            planes[j].OnHit();
+                            planes[i].removed = true;
+                            planes[j].removed = true;
                             player.points += 100;
                         }
-                    }
-                    if (planes[i].hp <= 0)
-                    {
-                        planes[i].removed = true;
-                        planes[i].OnDeath();
                     }
                 }
 
@@ -219,10 +225,13 @@ namespace Silent_Void
                     }
 
                 }
-                if (planes.All(planes => planes.friendly))
+                if (planes.All(planes => planes.friendly) && level.waveNum >= level.wavePlural.Count)
                 {
                     gameState = GameState.EndLevel;
 
+                } else if (planes.All(planes => planes.friendly) && level.waveNum < level.wavePlural.Count)
+                {
+                    level.startWave();
                 }
                 //if (planes.Count <= 1)
                 //{
@@ -264,18 +273,17 @@ namespace Silent_Void
             }
             if (gameState == GameState.Overworld)
             {
-                
+
                 spriteBatch.Draw(systemBg, new Rectangle(0, 0, 1920, 1080), Color.White);
-                spriteBatch.Draw(arrow, new Rectangle((int) arrowPos.X, (int) arrowPos.Y, 50, 50), Color.White);
+                spriteBatch.Draw(arrow, new Rectangle((int)arrowPos.X, (int)arrowPos.Y, 50, 50), Color.White);
             }
             if (gameState == GameState.LevelWorld)
             {
                 spriteBatch.Draw(bg, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.White);
                 for (int i = 0; i < planes.Count; i++)
                 {
-                    planes[i].Draw(spriteBatch, new Vector2(0,0));
+                    planes[i].Draw(spriteBatch, new Vector2(0, 0));
                 }
-                spriteBatch.Draw(overlay, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.Red * player.hurtTransparency);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
             if (gameState == GameState.YouDied)
@@ -294,6 +302,6 @@ namespace Silent_Void
             base.Draw(gameTime);
         }
 
-        
+
     }
 }
