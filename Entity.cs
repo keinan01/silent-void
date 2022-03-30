@@ -45,6 +45,10 @@ namespace Silent_Void
         public virtual void OnHit()
         {
             hp--;
+            if(hp <= 0)
+            {
+                removed = true;
+            }
         }
 
 

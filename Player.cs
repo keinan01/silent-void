@@ -143,6 +143,7 @@ namespace Silent_Void
         public void Shoot(Vector2 pos, float rad, bool friendly)
         {
             game.Add(new Projectile(game.bullet, pos, rad, friendly, 15));
+            sfx.Play();
         }
     }
 }

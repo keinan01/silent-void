@@ -21,8 +21,8 @@ namespace Silent_Void
         {
             base.colour = Color.White;
             base.tex = tex;
-            base.size = new Vector2(32, 32);
-            hitBoxSize = new Vector2(32, 32);
+            base.size = new Vector2(36, 36);
+            hitBoxSize = new Vector2(36, 36);
             base.pos = pos;
             base.rad = rad;
             base.hp = 1;
