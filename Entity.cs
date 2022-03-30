@@ -18,6 +18,7 @@ namespace Silent_Void
         public Texture2D tex;
         public Color colour;
         public float rad;
+        public SoundEffect sfx;
         public static Game1 game;
         public bool removed = false;
         public static Entity player;
@@ -54,6 +55,10 @@ namespace Silent_Void
         public bool collides(Entity other)
         {
             return new Rectangle((int)(pos.X - hitBoxSize.X/2), (int)(pos.Y - hitBoxSize.Y / 2), (int)hitBoxSize.X, (int)hitBoxSize.Y - 20).Intersects(new Rectangle((int)(other.pos.X - other.hitBoxSize.X / 2), (int)(other.pos.Y - other.hitBoxSize.Y / 2), (int)other.hitBoxSize.X, (int)other.hitBoxSize.Y));
+        }
+        public void loadSfx(SoundEffect sfx)
+        {
+            this.sfx = sfx;
         }
     }
 }
