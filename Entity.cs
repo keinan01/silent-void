@@ -24,7 +24,7 @@ namespace Silent_Void
         public static Entity player;
         public bool friendly;
         public bool isBullet;
-        public int hp;
+        public int hp, maxHp;
         public bool invincible = false;
         public Entity()
         {
@@ -45,7 +45,7 @@ namespace Silent_Void
         public virtual void OnHit()
         {
             hp--;
-            if(hp <= 0)
+            if (hp <= 0)
             {
                 removed = true;
             }
@@ -58,7 +58,7 @@ namespace Silent_Void
 
         public bool collides(Entity other)
         {
-            return new Rectangle((int)(pos.X - hitBoxSize.X/2), (int)(pos.Y - hitBoxSize.Y / 2), (int)hitBoxSize.X, (int)hitBoxSize.Y - 20).Intersects(new Rectangle((int)(other.pos.X - other.hitBoxSize.X / 2), (int)(other.pos.Y - other.hitBoxSize.Y / 2), (int)other.hitBoxSize.X, (int)other.hitBoxSize.Y));
+            return new Rectangle((int)(pos.X - hitBoxSize.X / 2), (int)(pos.Y - hitBoxSize.Y / 2), (int)hitBoxSize.X, (int)hitBoxSize.Y - 20).Intersects(new Rectangle((int)(other.pos.X - other.hitBoxSize.X / 2), (int)(other.pos.Y - other.hitBoxSize.Y / 2), (int)other.hitBoxSize.X, (int)other.hitBoxSize.Y));
         }
         public void loadSfx(SoundEffect sfx)
         {

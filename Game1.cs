@@ -42,7 +42,7 @@ namespace Silent_Void
         float rotationRadians = 0f;
         MouseState mouseState;
         Vector2 arrowPos;
-        int arrowCycle;
+        int arrowCycle, levelCycle, LevelCount;
         GameState gameState = GameState.TitleScreen;
 
         private Level level;
@@ -75,9 +75,10 @@ namespace Silent_Void
             Entity.game = this;
             screen = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             arrowCycle = 0;
+            levelCycle = 1;
             base.Initialize();
 
-            
+
         }
 
         private void CreateLevel(String path)
@@ -98,7 +99,7 @@ namespace Silent_Void
             OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
             bg = this.Content.Load<Texture2D>("bg");
 
-            CreateLevel(@"Content\levels\level01.txt");
+            
 
             titleBg = this.Content.Load<Texture2D>("title screen");
 
@@ -115,6 +116,8 @@ namespace Silent_Void
             overlay.SetData(new Color[] { Color.White });
 
             coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
+            LevelCount = 5;
+
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("gunshot");
             //for (int i = 0; i < 1; i++)
@@ -126,7 +129,7 @@ namespace Silent_Void
             //    planes.Add(new Enemy(new Vector2(200, 200), 1f));
             //}
 
-            
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -155,25 +158,28 @@ namespace Silent_Void
                 this.Exit();
             if (gameState == GameState.TitleScreen)
             {
-                if (key.IsKeyDown(Keys.Enter))
+                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
-                    gameState = GameState.LevelWorld;
+                    
+                    gameState = GameState.Overworld;
                 }
-            }
-            if (gameState == GameState.Overworld)
+            } else if (gameState == GameState.Overworld)
             {
+                player.reset();
 
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
+                    CreateLevel(@"Content\levels\level0" + levelCycle + ".txt");
                     gameState = GameState.LevelWorld;
                 }
                 if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
                 {
                     arrowCycle += 2;
-
+                    levelCycle += 1;
                     if (arrowCycle > coords.Count - 4)
                     {
                         arrowCycle = 0;
+                        levelCycle = 1;
                     }
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
@@ -181,10 +187,11 @@ namespace Silent_Void
                 if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
                 {
                     arrowCycle -= 2;
-
+                    levelCycle -= 1;
                     if (arrowCycle < 0)
                     {
                         arrowCycle = coords.Count - 4;
+                        levelCycle = LevelCount;
                     }
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
@@ -192,6 +199,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.LevelWorld)
             {
+                
                 if (player.removed)
                 {
                     sfxShot.Play();
@@ -231,7 +239,8 @@ namespace Silent_Void
                 {
                     gameState = GameState.EndLevel;
 
-                } else if (planes.All(planes => planes.friendly) && level.waveNum < level.wavePlural.Count)
+                }
+                else if (planes.All(planes => planes.friendly) && level.waveNum < level.wavePlural.Count)
                 {
                     level.startWave();
                 }
@@ -239,11 +248,15 @@ namespace Silent_Void
                 //{
 
                 //}
+                
+
+            }
+            if (gameState == GameState.EndLevel)
+            {
                 if (key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;
                 }
-
             }
             // TODO: Add your update logic here
             oldkey = key;
@@ -297,7 +310,7 @@ namespace Silent_Void
             {
                 //spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
                 GraphicsDevice.Clear(Color.Black);
-                spriteBatch.DrawString(font, "Level End!!!", new Vector2(1920 / 2, 1080 / 2), Color.White);
+                spriteBatch.DrawString(font, "Level End!!! \n press Backspace to enter overworld", new Vector2(1920 / 2, 1080 / 2), Color.White);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(1920 / 2, (1080 / 2) + 50), Color.White);
             }
 

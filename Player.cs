@@ -14,7 +14,7 @@ namespace Silent_Void
 
 {
     class Player : Entity
-    { 
+    {
         int cooldown = 0;
         int reload = 10;
         public int points;
@@ -22,15 +22,17 @@ namespace Silent_Void
         int speed = 8;
         public float hurtTransparency = 0f;
         public float iframe = 0;
+        Vector2 defaultPos;
         public Player(Texture2D tex, Vector2 pos, float rad)
         {
             base.colour = Color.White;
             base.tex = tex;
             size = new Vector2(72, 72);
             hitBoxSize = size - new Vector2(10, 10);
-            base.pos = pos;
+            defaultPos = pos;
             base.rad = rad;
-            base.hp = 5;
+            
+            base.maxHp = 5;
             friendly = true;
             isBullet = false;
             points = 0;
@@ -106,13 +108,13 @@ namespace Silent_Void
             cooldown++;
 
             hurtTransparency -= 0.05f;
-            if(hurtTransparency < 0)
+            if (hurtTransparency < 0)
             {
                 hurtTransparency = 0;
             }
 
             iframe--;
-            if(iframe < 0)
+            if (iframe < 0)
             {
                 iframe = 0;
                 invincible = false;
@@ -138,6 +140,13 @@ namespace Silent_Void
                 iframe = 60;
                 base.OnHit();
             }
+        }
+
+        public void reset()
+        {
+            base.hp = maxHp;
+            pos = defaultPos;
+            vel = new Vector2(0, 0);
         }
 
         public void Shoot(Vector2 pos, float rad, bool friendly)
