@@ -35,7 +35,8 @@ namespace Silent_Void
         Player player;
         public List<Entity> planes;
         SpriteFont font;
-        Texture2D bg, systemBg, arrow, deathBg, titleBg, overlay;
+        Texture2D systemBg, arrow, deathBg, titleBg, overlay;
+        Dictionary<string,Texture2D> bgs;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
         Vector2 screen;
@@ -97,9 +98,13 @@ namespace Silent_Void
             playerTex = this.Content.Load<Texture2D>("player");
             Enemy.texture = this.Content.Load<Texture2D>("spitter");
             OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
-            bg = this.Content.Load<Texture2D>("bg");
+            bgs = new Dictionary<string, Texture2D>();
+            bgs.Add("bg", this.Content.Load<Texture2D>("bg"));
+            bgs.Add("bg2", this.Content.Load<Texture2D>("bg2"));
+            bgs.Add("bg3", this.Content.Load<Texture2D>("bg3"));
+            bgs.Add("bg4", this.Content.Load<Texture2D>("bg4"));
 
-            
+
 
             titleBg = this.Content.Load<Texture2D>("title screen");
 
@@ -115,8 +120,8 @@ namespace Silent_Void
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 1690, 330, 1175, 525, 135, 875, 405, 195, 135, 975 });
-            LevelCount = 5;
+            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195});
+            LevelCount = 4;
 
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("gunshot");
@@ -176,7 +181,7 @@ namespace Silent_Void
                 {
                     arrowCycle += 2;
                     levelCycle += 1;
-                    if (arrowCycle > coords.Count - 4)
+                    if (arrowCycle > coords.Count - 2)
                     {
                         arrowCycle = 0;
                         levelCycle = 1;
@@ -190,7 +195,7 @@ namespace Silent_Void
                     levelCycle -= 1;
                     if (arrowCycle < 0)
                     {
-                        arrowCycle = coords.Count - 4;
+                        arrowCycle = coords.Count - 2;
                         levelCycle = LevelCount;
                     }
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
@@ -294,7 +299,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.LevelWorld)
             {
-                spriteBatch.Draw(bg, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.White);
+                spriteBatch.Draw(bgs[level.bg], new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.White);
                 for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Draw(spriteBatch, new Vector2(0, 0));

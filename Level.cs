@@ -15,9 +15,8 @@ namespace Silent_Void
     {
         Game1 game;
         int enemies, OpEnemies;
-        String bg, music;
+        public string bg, music;
         int[] wave = new int[3];
-        List<String[]> items;
         public List<int[]> wavePlural = new List<int[]>();
         public int waveNum = 0;
         public Level(IServiceProvider _serviceProvider, string path, Game1 game)
@@ -65,11 +64,10 @@ namespace Silent_Void
         private void ReadLevel(List<String> items)
         {
             //Debug.WriteLine(items[0][0]);
-            if (items[0].Equals("bg1"))
-            {
-                bg = "bg1";
-                Debug.WriteLine("works!");
-            }
+            bg = items[0];
+
+            Debug.Print(bg);
+
             if (items[1].Equals("null"))
             {
                 music = "none";

@@ -1,4 +1,4 @@
-bg1
+bg
 null
 en1 2
 op1 2
