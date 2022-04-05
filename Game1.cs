@@ -45,6 +45,7 @@ namespace Silent_Void
         Vector2 arrowPos;
         int arrowCycle, levelCycle, LevelCount;
         GameState gameState = GameState.TitleScreen;
+        Vector2 hpPos = new Vector2(0, 20);
 
         private Level level;
 
@@ -305,6 +306,7 @@ namespace Silent_Void
                     planes[i].Draw(spriteBatch, new Vector2(0, 0));
                 }
                 spriteBatch.Draw(overlay, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.Red * player.hurtTransparency);
+                spriteBatch.Draw(overlay, new Rectangle((int)hpPos.X, (int)hpPos.Y, player.hp * 20, 20), Color.Green);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
             if (gameState == GameState.YouDied)
