@@ -218,7 +218,7 @@ namespace Silent_Void
                     planes[i].Update();
                     for (int j = 0; j < planes.Count; j++)
                     {
-                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly)
+                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible)
                         {
                             //sfxShot.Play();
                             planes[i].OnHit();
