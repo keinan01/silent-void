@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,9 @@ using System.Text;
 
 namespace Silent_Void
 {
-    class Enemy : Entity
+    class Enemy : Entity // subclass of entity
     {
+        // instance fields - various purposes like texture and speed to name a few
         public static Random rnd = new Random();
         public static Texture2D texture;
         public int reload = 200;
@@ -17,10 +18,11 @@ namespace Silent_Void
         int speed = 5;
         float acc = 0.1f;
         double deviance = 0;
+        // empty constructor getting values from other constructor
         public Enemy(Vector2 pos, float rad) : this(texture, pos, rad)
         {
         }
-        public Enemy(Texture2D tex, Vector2 pos, float rad)
+        public Enemy(Texture2D tex, Vector2 pos, float rad)// main enemy constructor
         {
             base.colour = Color.White;
             base.tex = tex;
@@ -33,11 +35,12 @@ namespace Silent_Void
             isBullet = false;
         }
 
-        public override void Update()
+        public override void Update() // movement for enemy - overrides entity class update method
         {
+            // managing the speed, movement, direction going towards player but not super close
             Vector2 target = player.pos - pos;
             rad = (float)(Math.Atan2(target.Y, target.X) + Math.PI);
-            if ((player.pos - pos).Length() < 350)
+            if ((player.pos - pos).Length() < 350) 
             {
                 target = pos - player.pos;
             }
@@ -45,7 +48,7 @@ namespace Silent_Void
             {
                 double ang = Math.Atan2(target.Y, target.X);
                 deviance += (rnd.NextDouble() - 0.5) * Math.PI / 6;
-                if (deviance > Math.PI / 2)
+                if (deviance > Math.PI / 2) // making sure enemies dont bunch up together
                 {
                     deviance = Math.PI / 2;
                 }
@@ -58,7 +61,7 @@ namespace Silent_Void
                 vel += new Vector2((float)Math.Cos(ang) * acc, (float)Math.Sin(ang) * acc);
             }
 
-            if (vel.LengthSquared() > speed * speed)
+            if (vel.LengthSquared() > speed * speed) // making sure its not too fast
             {
                 vel.Normalize();
                 vel *= speed;
@@ -66,12 +69,13 @@ namespace Silent_Void
 
             if (cooldown >= reload)
             {
-                Shoot(pos, rad, false);
+                Shoot(pos, rad, false); // shoot after cooldown
                 cooldown = 0;
             }
 
             cooldown++;
 
+            // rebound off the screen edges
             if (pos.X < 0)
             {
                 pos.X = 0;
@@ -93,10 +97,12 @@ namespace Silent_Void
                 vel.Y = -vel.Y;
             }
 
+            // update entity
             base.Update();
         }
-        public virtual void Shoot(Vector2 pos, float rad, bool friendly)
+        public virtual void Shoot(Vector2 pos, float rad, bool friendly) // shoots enemy projectile
         {
+            // shoot the projectile and play sound
             game.Add(new Projectile(game.enemyBullet, pos, rad, friendly, 15));
             sfx.Play();
         }
