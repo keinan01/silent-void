@@ -1,5 +1,3 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,14 +19,14 @@ namespace Silent_Void
     {
         LevelWorld,
         Overworld,
-        Shop,
+        GUIHub,
         YouDied,
         TitleScreen,
         EndLevel
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        public SoundEffect sfxShot;
+        public SoundEffect sfxShot, sfxShotPlayer, sfxPlayerDeath;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -36,7 +34,7 @@ namespace Silent_Void
         public List<Entity> planes;
         SpriteFont font;
         Texture2D systemBg, arrow, deathBg, titleBg, overlay;
-        Dictionary<string,Texture2D> bgs;
+        Dictionary<string, Texture2D> bgs;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
         Vector2 screen;
@@ -121,11 +119,13 @@ namespace Silent_Void
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195});
+            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195 });
             LevelCount = 4;
 
             arrowPos = new Vector2(coords[0], coords[1]);
-            sfxShot = this.Content.Load<SoundEffect>("gunshot");
+            sfxShot = this.Content.Load<SoundEffect>("music sfx/alien shot");
+            sfxShotPlayer = this.Content.Load<SoundEffect>("music sfx/alien death sfx");
+            sfxPlayerDeath = this.Content.Load<SoundEffect>("music sfx/death sfx");
             //for (int i = 0; i < 1; i++)
             //{
             //    planes.Add(new OpEnemy(new Vector2(200, 200), 1f));
@@ -166,10 +166,11 @@ namespace Silent_Void
             {
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
-                    
+
                     gameState = GameState.Overworld;
                 }
-            } else if (gameState == GameState.Overworld)
+            }
+            else if (gameState == GameState.Overworld)
             {
                 player.reset();
 
@@ -202,13 +203,23 @@ namespace Silent_Void
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
+                if (!oldkey.IsKeyDown(Keys.M) && key.IsKeyDown(Keys.M))
+                {
+
+                    gameState = GameState.GUIHub;
+                }
+
+            }
+            if (gameState == GameState.GUIHub)
+            {
+
             }
             if (gameState == GameState.LevelWorld)
             {
-                
+
                 if (player.removed)
                 {
-                    sfxShot.Play();
+                    
                     gameState = GameState.YouDied;
 
 
@@ -235,7 +246,7 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
-                        sfxShot.Play();
+                        
                         planes.RemoveAt(i);
 
                     }
@@ -254,7 +265,7 @@ namespace Silent_Void
                 //{
 
                 //}
-                
+
 
             }
             if (gameState == GameState.EndLevel)
@@ -262,6 +273,17 @@ namespace Silent_Void
                 if (key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;
+                }
+            }
+
+            if (gameState == GameState.YouDied)
+            {
+                if (key.IsKeyDown(Keys.Back))
+                {
+                    gameState = GameState.Overworld;
+                    planes = new List<Entity>();
+                    planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
+                    
                 }
             }
             // TODO: Add your update logic here
@@ -310,6 +332,10 @@ namespace Silent_Void
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
             if (gameState == GameState.YouDied)
+            {
+                spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
+            }
+            if (gameState == GameState.GUIHub)
             {
                 spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
