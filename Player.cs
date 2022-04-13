@@ -117,7 +117,6 @@ namespace Silent_Void
                 hurtTransparency = 0;
             }
 
-            // managing invincible state
             iframe--;
             if (iframe < 0)
             {
