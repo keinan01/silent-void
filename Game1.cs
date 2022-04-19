@@ -17,8 +17,7 @@ namespace Silent_Void
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-
-    enum GameState // enum for managing which screens the game is on (gamestate)
+    enum GameState
     {
         LevelWorld,
         Overworld,
@@ -29,7 +28,6 @@ namespace Silent_Void
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        // alot of instance fields like sound, keyboard, textures, vectors, etc
         public SoundEffect sfxShot;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
@@ -49,10 +47,9 @@ namespace Silent_Void
         GameState gameState = GameState.TitleScreen;
         Vector2 hpPos = new Vector2(0, 20);
 
-        private Level level; // make a level variable
+        private Level level;
 
-        List<int> coords = new List<int>(); // coord ranges
-
+        List<int> coords = new List<int>();
         public Game1()
         {
             this.Window.AllowUserResizing = true;
@@ -60,10 +57,9 @@ namespace Silent_Void
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            
 
-            // changing the generic screen size to preferred size
             graphics.PreferredBackBufferWidth = 1920;
+            //graphics.IsFullScreen = true;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
         }
@@ -77,9 +73,8 @@ namespace Silent_Void
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            // initialize game cycle and the UI
             this.IsMouseVisible = true;
-            Entity.game = this; 
+            Entity.game = this;
             screen = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             arrowCycle = 0;
             levelCycle = 1;
@@ -88,7 +83,7 @@ namespace Silent_Void
 
         }
 
-        private void CreateLevel(String path) // make a level based on the text file
+        private void CreateLevel(String path)
         {
             level = new Level(Services, path, this);
         }
@@ -101,10 +96,11 @@ namespace Silent_Void
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            // load in player, enemy, and background textures
             playerTex = this.Content.Load<Texture2D>("player");
             Enemy.texture = this.Content.Load<Texture2D>("spitter");
             OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
+            Spider.texture = this.Content.Load<Texture2D>("baby");
+            SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("spider");
             bgs = new Dictionary<string, Texture2D>();
             bgs.Add("bg", this.Content.Load<Texture2D>("bg"));
             bgs.Add("bg2", this.Content.Load<Texture2D>("bg2"));
@@ -115,7 +111,6 @@ namespace Silent_Void
 
             titleBg = this.Content.Load<Texture2D>("title screen");
 
-            // loading in bullet and initializing sizes of previous textures + more backgrounds
             bullet = this.Content.Load<Texture2D>("bullet");
             enemyBullet = this.Content.Load<Texture2D>("glob");
             Entity.player = player = new Player(playerTex, screen / 2, rotationRadians);
@@ -128,13 +123,20 @@ namespace Silent_Void
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            // add ranges to coords
             coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195});
-            LevelCount = 4; // num of levels so far
+            LevelCount = 4;
 
-            arrowPos = new Vector2(coords[0], coords[1]); // for selecting arrow
-            sfxShot = this.Content.Load<SoundEffect>("gunshot"); // gunshot sfx
-        
+            arrowPos = new Vector2(coords[0], coords[1]);
+            sfxShot = this.Content.Load<SoundEffect>("gunshot");
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    planes.Add(new OpEnemy(new Vector2(200, 200), 1f));
+            //}
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    planes.Add(new Enemy(new Vector2(200, 200), 1f));
+            //}
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -156,13 +158,12 @@ namespace Silent_Void
         protected override void Update(GameTime gameTime)
 
         {
-            KeyboardState key = Keyboard.GetState(); 
+            KeyboardState key = Keyboard.GetState();
 
             mouseState = Mouse.GetState();
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
-            // managing the gamestate based on key presses
             if (gameState == GameState.TitleScreen)
             {
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
@@ -176,22 +177,22 @@ namespace Silent_Void
 
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
-                    CreateLevel(@"Content\levels\level0" + levelCycle + ".txt"); // go to specified level
-                    gameState = GameState.LevelWorld; 
+                    CreateLevel(@"Content\levels\level0" + levelCycle + ".txt");
+                    gameState = GameState.LevelWorld;
                 }
-                if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left)) // moving arrow left
+                if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
                 {
-                    arrowCycle += 2; // managing where arrow can move 
+                    arrowCycle += 2;
                     levelCycle += 1;
-                    if (arrowCycle > coords.Count - 2) // rebounding it to the first one after 4th one
+                    if (arrowCycle > coords.Count - 2)
                     {
                         arrowCycle = 0;
                         levelCycle = 1;
                     }
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
-                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]); // change arrow pos
+                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
-                if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right))) // moving arrow right, same logic as moving (slightly different)
+                if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
                 {
                     arrowCycle -= 2;
                     levelCycle -= 1;
@@ -209,22 +210,22 @@ namespace Silent_Void
                 
                 if (player.removed)
                 {
-                    sfxShot.Play(); // on death, play sound & move to you died screen
+                    sfxShot.Play();
                     gameState = GameState.YouDied;
 
 
                 }
-                for (int i = 0; i < planes.Count; i++) // manage the shooting logic 
+                for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Update();
                     for (int j = 0; j < planes.Count; j++)
                     {
-                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible)
+                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible && !planes[i].removed && !planes[j].removed)
                         {
                             //sfxShot.Play();
                             planes[i].OnHit();
-                            planes[j].OnHit(); // killing enemy after shot
-                            player.points += 100; // adding points
+                            planes[j].OnHit();
+                            player.points += 100;
                         }
                     }
                 }
@@ -236,32 +237,47 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
+                        planes[i].OnDeath();
                         sfxShot.Play();
-                        planes.RemoveAt(i); // after enemy died, play sound & remove
+                        planes.RemoveAt(i);
 
                     }
 
                 }
-                // start and end levels
                 if (planes.All(planes => planes.friendly) && level.waveNum >= level.wavePlural.Count)
                 {
-                    gameState = GameState.EndLevel; 
+                    gameState = GameState.EndLevel;
 
                 }
                 else if (planes.All(planes => planes.friendly) && level.waveNum < level.wavePlural.Count)
                 {
                     level.startWave();
                 }
-     
+                //if (planes.Count <= 1)
+                //{
+
+                //}
                 
 
             }
-            // control to go back to overworld screen
             if (gameState == GameState.EndLevel)
             {
                 if (key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;
+                    planes = new List<Entity>();
+                    planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
+                }
+            }
+
+            if (gameState == GameState.YouDied)
+            {
+                if (key.IsKeyDown(Keys.Back))
+                {
+                    gameState = GameState.Overworld;
+                    planes = new List<Entity>();
+                    planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
+
                 }
             }
             // TODO: Add your update logic here
@@ -270,7 +286,7 @@ namespace Silent_Void
             base.Update(gameTime);
         }
 
-        public void Add(Entity e) // add planes
+        public void Add(Entity e)
         {
             planes.Add(e);
         }
@@ -288,33 +304,32 @@ namespace Silent_Void
                   BlendState.AlphaBlend,
                   SamplerState.PointClamp,
                   null, null, null);
-            // draw based on gamestate
             if (gameState == GameState.TitleScreen)
             {
-                spriteBatch.Draw(titleBg, new Rectangle(0, 0, 1920, 1080), Color.White); // draw title background with game name
+                spriteBatch.Draw(titleBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
-            if (gameState == GameState.Overworld) // draw solar system and arrow
+            if (gameState == GameState.Overworld)
             {
 
                 spriteBatch.Draw(systemBg, new Rectangle(0, 0, 1920, 1080), Color.White);
                 spriteBatch.Draw(arrow, new Rectangle((int)arrowPos.X, (int)arrowPos.Y, 50, 50), Color.White);
             }
-            if (gameState == GameState.LevelWorld) // draw level based on the specifications of the text file
+            if (gameState == GameState.LevelWorld)
             {
                 spriteBatch.Draw(bgs[level.bg], new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.White);
                 for (int i = 0; i < planes.Count; i++)
                 {
                     planes[i].Draw(spriteBatch, new Vector2(0, 0));
                 }
-                spriteBatch.Draw(overlay, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.Red * player.hurtTransparency); // hit feedback for player
+                spriteBatch.Draw(overlay, new Rectangle(0, 0, (int)screen.X, (int)screen.Y), Color.Red * player.hurtTransparency);
                 spriteBatch.Draw(overlay, new Rectangle((int)hpPos.X, (int)hpPos.Y, player.hp * 20, 20), Color.Green);
-                spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White); // show player points
+                spriteBatch.DrawString(font, player.points.ToString(), new Vector2(0, 0), Color.White);
             }
             if (gameState == GameState.YouDied)
             {
-                spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White); // death screen
+                spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
-            if (gameState == GameState.EndLevel)  // level summary screen
+            if (gameState == GameState.EndLevel)
             {
                 //spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
                 GraphicsDevice.Clear(Color.Black);

@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -8,21 +8,17 @@ using System.Text;
 
 namespace Silent_Void
 {
-    class Spider : Entity // subclass of entity
+    class Spider : Entity
     {
-        // needed instance fields for the class to function
         public static Texture2D texture;
         public int speed = 10;
         float acc = 0.2f;
         double deviance = 0;
-        // empty constructor that derives info from the other constructor
         public Spider(Vector2 pos, float rad) : this(texture, pos, rad)
         {
         }
-        // constructor that initializes various base and class variables
         public Spider(Texture2D tex, Vector2 pos, float rad)
         {
-            // managing position, hp, etc
             base.colour = Color.White;
             base.tex = tex;
             base.size = new Vector2(36, 36);
@@ -33,15 +29,12 @@ namespace Silent_Void
             friendly = false;
             isBullet = false;
         }
-        // update the spider position, speed, movement, etc
         public override void Update()
         {
-            // going towards the player - not too close though
             Vector2 target = player.pos - pos;
             rad = (float)(Math.Atan2(target.Y, target.X) + Math.PI);
 
             double ang = Math.Atan2(target.Y, target.X);
-            // making sure enemies dont bunch up together - deviance
             deviance += (Enemy.rnd.NextDouble() - 0.5) * Math.PI / 6;
             if (deviance > Math.PI / 4)
             {
@@ -55,12 +48,12 @@ namespace Silent_Void
 
             vel += new Vector2((float)Math.Cos(ang) * acc, (float)Math.Sin(ang) * acc);
 
-            if (vel.LengthSquared() > speed * speed) //make sure its not going too fast
+            if (vel.LengthSquared() > speed * speed)
             {
                 vel.Normalize();
                 vel *= speed;
             }
-            // making sure its within bounds, rebounding if needed
+
             if (pos.X < 0)
             {
                 pos.X = 0;
@@ -81,6 +74,10 @@ namespace Silent_Void
                 pos.Y = 1080;
                 vel.Y = -vel.Y;
             }
+            base.Update();
+        }
+        public void UpdatePos()
+        {
             base.Update();
         }
     }
