@@ -1,5 +1,3 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,22 +19,23 @@ namespace Silent_Void
     {
         LevelWorld,
         Overworld,
-        Shop,
+        GUIHub,
         YouDied,
         TitleScreen,
         EndLevel
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        public SoundEffect sfxShot;
+        public SoundEffect sfxShot, sfxShotPlayer, sfxPlayerDeath;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
+        Hub hub;
         public List<Entity> planes;
         SpriteFont font;
-        Texture2D systemBg, arrow, deathBg, titleBg, overlay;
-        Dictionary<string,Texture2D> bgs;
+        Texture2D systemBg, arrow, deathBg, titleBg, overlay, hubBg, highlightTex;
+        Dictionary<string, Texture2D> bgs;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
         Vector2 screen;
@@ -96,46 +95,47 @@ namespace Silent_Void
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            playerTex = this.Content.Load<Texture2D>("player");
-            Enemy.texture = this.Content.Load<Texture2D>("spitter");
-            OpEnemy.texture = this.Content.Load<Texture2D>("sprayer");
-            Spider.texture = this.Content.Load<Texture2D>("baby");
-            SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("spider");
+            playerTex = this.Content.Load<Texture2D>("img/player");
+            Enemy.texture = this.Content.Load<Texture2D>("img/spitter");
+            OpEnemy.texture = this.Content.Load<Texture2D>("img/sprayer");
             bgs = new Dictionary<string, Texture2D>();
-            bgs.Add("bg", this.Content.Load<Texture2D>("bg"));
-            bgs.Add("bg2", this.Content.Load<Texture2D>("bg2"));
-            bgs.Add("bg3", this.Content.Load<Texture2D>("bg3"));
-            bgs.Add("bg4", this.Content.Load<Texture2D>("bg4"));
+            bgs.Add("bg", this.Content.Load<Texture2D>("img/bg"));
+            bgs.Add("bg2", this.Content.Load<Texture2D>("img/bg2"));
+            bgs.Add("bg3", this.Content.Load<Texture2D>("img/bg3"));
+            bgs.Add("bg4", this.Content.Load<Texture2D>("img/bg4"));
 
+            Spider.texture = this.Content.Load<Texture2D>("img/baby");
+            SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("img/spider");
 
+            
 
-            titleBg = this.Content.Load<Texture2D>("title screen");
+            hubBg = this.Content.Load<Texture2D>("img/GUI hub");
+            highlightTex = this.Content.Load<Texture2D>("img/highlight");
+            hub = new Hub(hubBg, highlightTex);
+            titleBg = this.Content.Load<Texture2D>("img/title screen");
 
-            bullet = this.Content.Load<Texture2D>("bullet");
-            enemyBullet = this.Content.Load<Texture2D>("glob");
+            Item.spriteSheet = this.Content.Load<Texture2D>("img/spritesheet");
+
+            bullet = this.Content.Load<Texture2D>("img/bullet");
+            enemyBullet = this.Content.Load<Texture2D>("img/glob");
             Entity.player = player = new Player(playerTex, screen / 2, rotationRadians);
             planes = new Entity[] { player }.ToList();
-            arrow = this.Content.Load<Texture2D>("arrow");
+            arrow = this.Content.Load<Texture2D>("img/arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
-            systemBg = this.Content.Load<Texture2D>("sair conglomerate");
-            deathBg = this.Content.Load<Texture2D>("deadth screen");
+            systemBg = this.Content.Load<Texture2D>("img/sair conglomerate");
+            deathBg = this.Content.Load<Texture2D>("img/deadth screen");
 
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195});
+            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195 });
             LevelCount = 4;
 
             arrowPos = new Vector2(coords[0], coords[1]);
-            sfxShot = this.Content.Load<SoundEffect>("gunshot");
-            //for (int i = 0; i < 1; i++)
-            //{
-            //    planes.Add(new OpEnemy(new Vector2(200, 200), 1f));
-            //}
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    planes.Add(new Enemy(new Vector2(200, 200), 1f));
-            //}
+            sfxShot = this.Content.Load<SoundEffect>("music sfx/alien shot");
+            sfxShotPlayer = this.Content.Load<SoundEffect>("music sfx/alien death sfx");
+            sfxPlayerDeath = this.Content.Load<SoundEffect>("music sfx/death sfx");
+            
 
 
             // TODO: use this.Content to load your game content here
@@ -168,10 +168,11 @@ namespace Silent_Void
             {
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
-                    
+
                     gameState = GameState.Overworld;
                 }
-            } else if (gameState == GameState.Overworld)
+            }
+            else if (gameState == GameState.Overworld)
             {
                 player.reset();
 
@@ -204,13 +205,28 @@ namespace Silent_Void
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
+                if (!oldkey.IsKeyDown(Keys.M) && key.IsKeyDown(Keys.M))
+                {
+
+                    gameState = GameState.GUIHub;
+                }
+
+            }
+            if (gameState == GameState.GUIHub)
+            {
+                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
+                {
+
+                    gameState = GameState.Overworld;
+                }
+                hub.Update();
             }
             if (gameState == GameState.LevelWorld)
             {
-                
+
                 if (player.removed)
                 {
-                    sfxShot.Play();
+                    
                     gameState = GameState.YouDied;
 
 
@@ -220,9 +236,9 @@ namespace Silent_Void
                     planes[i].Update();
                     for (int j = 0; j < planes.Count; j++)
                     {
-                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible && !planes[i].removed && !planes[j].removed)
+                        if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible)
                         {
-                            //sfxShot.Play();
+                            
                             planes[i].OnHit();
                             planes[j].OnHit();
                             player.points += 100;
@@ -237,6 +253,7 @@ namespace Silent_Void
                 {
                     if (planes[i].removed)
                     {
+
                         planes[i].OnDeath();
                         sfxShot.Play();
                         planes.RemoveAt(i);
@@ -253,11 +270,8 @@ namespace Silent_Void
                 {
                     level.startWave();
                 }
-                //if (planes.Count <= 1)
-                //{
-
-                //}
                 
+
 
             }
             if (gameState == GameState.EndLevel)
@@ -265,8 +279,6 @@ namespace Silent_Void
                 if (key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;
-                    planes = new List<Entity>();
-                    planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
                 }
             }
 
@@ -277,7 +289,7 @@ namespace Silent_Void
                     gameState = GameState.Overworld;
                     planes = new List<Entity>();
                     planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
-
+                    
                 }
             }
             // TODO: Add your update logic here
@@ -329,9 +341,13 @@ namespace Silent_Void
             {
                 spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
             }
+            if (gameState == GameState.GUIHub)
+            {
+                hub.Draw(spriteBatch);
+            }
             if (gameState == GameState.EndLevel)
             {
-                //spriteBatch.Draw(deathBg, new Rectangle(0, 0, 1920, 1080), Color.White);
+                
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.DrawString(font, "Level End!!! \n press Backspace to enter overworld", new Vector2(1920 / 2, 1080 / 2), Color.White);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(1920 / 2, (1080 / 2) + 50), Color.White);
