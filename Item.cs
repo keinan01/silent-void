@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -22,7 +22,7 @@ namespace Silent_Void
         {
             itemType = item;
         }
-        void drawItem()
+        public void drawItem()
         {
             if (itemType == ItemType.HPBuff)
             {
@@ -32,6 +32,10 @@ namespace Silent_Void
             {
                 spriteRect = new Rectangle(64, 0, 64, 64);
             }
+            if (itemType == ItemType.Null)
+            {
+                spriteRect = new Rectangle(0, 0, 0, 0);
+            }
         }
         public void activateItem()
         {
@@ -39,6 +43,7 @@ namespace Silent_Void
             {
                 Entity.player.buffHp();
             }
+            itemType = ItemType.Null;
         }
 
         public void setPos(Rectangle newPos)
