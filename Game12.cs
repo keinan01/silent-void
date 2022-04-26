@@ -107,10 +107,7 @@ namespace Silent_Void
             Spider.texture = this.Content.Load<Texture2D>("img/baby");
             SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("img/spider");
 
-            Silo.texture = this.Content.Load<Texture2D>("img/silo");
-            Missile.texture = this.Content.Load<Texture2D>("img/missile");
-            Missile.fireball = this.Content.Load<Texture2D>("img/fireball");
-
+            
 
             hubBg = this.Content.Load<Texture2D>("img/GUI hub");
             highlightTex = this.Content.Load<Texture2D>("img/highlight");
@@ -131,7 +128,7 @@ namespace Silent_Void
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 196, 888, 1752, 448, 1080, 460, 392, 140 });
+            coords.AddRange(new List<int>() { 135, 875, 1690, 330, 1175, 525, 405, 195 });
             LevelCount = 4;
 
             arrowPos = new Vector2(coords[0], coords[1]);
@@ -216,7 +213,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.GUIHub)
             {
-
+                
                 if (!oldkey.IsKeyDown(Keys.Back) && key.IsKeyDown(Keys.Back))
                 {
                     gameState = GameState.Overworld;

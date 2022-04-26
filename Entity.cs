@@ -24,6 +24,7 @@ namespace Silent_Void
         public static Entity player;
         public bool friendly;
         public bool isBullet;
+        public float hurtcolor = 0;
         public int hp, maxHp;
         public bool invincible = false;
         public Entity()
@@ -40,13 +41,21 @@ namespace Silent_Void
         public virtual void Update()
         {
             pos += vel;
+            hurtcolor -= 0.2f;
+            if (hurtcolor < 0)
+            {
+                hurtcolor = 0;
+            }
+            colour = new Color(1, 1-hurtcolor, 1-hurtcolor);
         }
 
         public virtual void OnHit()
         {
             hp--;
+            hurtcolor = 1;
             if (hp <= 0)
             {
+
                 removed = true;
             }
         }

@@ -14,7 +14,7 @@ namespace Silent_Void
     class Level
     {
         Game1 game;
-        int enemies, OpEnemies, spiders, babies, boss;
+        int enemies, OpEnemies, spiders, babies, boss, silo;
         public string bg, music;
         int[] wave = new int[3];
         public List<int[]> wavePlural = new List<int[]>();
@@ -107,16 +107,22 @@ namespace Silent_Void
 
                     boss += int.Parse(word[1]);
                 }
+                if (word[0].Equals("silo1"))
+                {
+
+                    silo += int.Parse(word[1]);
+                }
 
                 if (items[i].Equals("."))
                 {
-                    wave = new int[]{ enemies, OpEnemies, spiders, babies, boss };
+                    wave = new int[]{ enemies, OpEnemies, spiders, babies, boss, silo};
                     wavePlural.Add(wave);
                     enemies = 0;
                     OpEnemies = 0;
                     spiders = 0;
                     babies = 0;
                     boss = 0;
+                    silo = 0;
 
                 }
 
@@ -148,6 +154,10 @@ namespace Silent_Void
             for (int i = 0; i < wavePlural[waveNum][4]; i++)
             {
                 game.planes.Add(new SpiderBoss(new Vector2(800, 0), 1f));
+            }
+            for (int i = 0; i < wavePlural[waveNum][5]; i++)
+            {
+                game.planes.Add(new Silo(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < game.planes.Count; i++)
             {
