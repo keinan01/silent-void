@@ -207,16 +207,15 @@ namespace Silent_Void
                 }
                 if (!oldkey.IsKeyDown(Keys.M) && key.IsKeyDown(Keys.M))
                 {
-
                     gameState = GameState.GUIHub;
                 }
 
             }
             if (gameState == GameState.GUIHub)
             {
-                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
+                
+                if (!oldkey.IsKeyDown(Keys.Back) && key.IsKeyDown(Keys.Back))
                 {
-
                     gameState = GameState.Overworld;
                 }
                 hub.Update();
