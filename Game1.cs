@@ -107,10 +107,7 @@ namespace Silent_Void
             Spider.texture = this.Content.Load<Texture2D>("img/baby");
             SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("img/spider");
 
-            Silo.texture = this.Content.Load<Texture2D>("img/silo");
-            Missile.texture = this.Content.Load<Texture2D>("img/missile");
-            Missile.fireball = this.Content.Load<Texture2D>("img/fireball");
-
+            
 
             hubBg = this.Content.Load<Texture2D>("img/GUI hub");
             highlightTex = this.Content.Load<Texture2D>("img/highlight");
@@ -131,7 +128,7 @@ namespace Silent_Void
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 196, 888, 1752, 448, 1080, 460, 392, 140 });
+            coords.AddRange(new List<int>() { 196, 888, 1752, 448, 1080, 460, 392, 140  });
             LevelCount = 4;
 
             arrowPos = new Vector2(coords[0], coords[1]);
@@ -186,6 +183,18 @@ namespace Silent_Void
                 }
                 if (!oldkey.IsKeyDown(Keys.Left) && key.IsKeyDown(Keys.Left))
                 {
+                    arrowCycle -= 2;
+                    levelCycle -= 1;
+                    if (arrowCycle <0)
+                    {
+                        arrowCycle = coords.Count - 2;
+                        levelCycle = LevelCount;
+                    }
+                    Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
+                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
+                }
+                if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
+                {
                     arrowCycle += 2;
                     levelCycle += 1;
                     if (arrowCycle > coords.Count - 2)
@@ -196,29 +205,18 @@ namespace Silent_Void
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
-                if (!oldkey.IsKeyDown(Keys.Right) && (key.IsKeyDown(Keys.Right)))
-                {
-                    arrowCycle -= 2;
-                    levelCycle -= 1;
-                    if (arrowCycle < 0)
-                    {
-                        arrowCycle = coords.Count - 2;
-                        levelCycle = LevelCount;
-                    }
-                    Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
-                    arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
-                }
                 if (!oldkey.IsKeyDown(Keys.M) && key.IsKeyDown(Keys.M))
                 {
+
                     gameState = GameState.GUIHub;
                 }
 
             }
             if (gameState == GameState.GUIHub)
             {
-
-                if (!oldkey.IsKeyDown(Keys.Back) && key.IsKeyDown(Keys.Back))
+                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
+
                     gameState = GameState.Overworld;
                 }
                 hub.Update();
