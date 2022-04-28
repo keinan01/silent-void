@@ -42,7 +42,7 @@ namespace Silent_Void
         float rotationRadians = 0f;
         MouseState mouseState;
         Vector2 arrowPos;
-        int arrowCycle, levelCycle, LevelCount;
+        int arrowCycle, levelCycle, LevelCount, winCount = 0;
         GameState gameState = GameState.TitleScreen;
         Vector2 hpPos = new Vector2(0, 20);
 
@@ -175,7 +175,13 @@ namespace Silent_Void
             else if (gameState == GameState.Overworld)
             {
                 player.reset();
-
+                if(winCount == 5)
+                {
+                    systemBg = this.Content.Load<Texture2D>("img/sair conglomerate alt");
+                    coords.Add(1460);
+                    coords.Add(870);
+                    
+                }
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
                     CreateLevel(@"Content\levels\level0" + levelCycle + ".txt");
@@ -278,6 +284,7 @@ namespace Silent_Void
             {
                 if (key.IsKeyDown(Keys.Back))
                 {
+                    winCount++;
                     gameState = GameState.Overworld;
                 }
             }
