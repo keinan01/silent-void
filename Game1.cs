@@ -326,11 +326,14 @@ namespace Silent_Void
             {
                 if (key.IsKeyDown(Keys.Back))
                 {
+                    hub.resetShop();
                     gameState = GameState.Overworld;
                     planes = new List<Entity>();
                     planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
                     
                 }
+                
+               
             }
             // TODO: Add your update logic here
             oldkey = key;
