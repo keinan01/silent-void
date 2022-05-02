@@ -5,8 +5,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
+
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Media;
 using System.Diagnostics;
 
@@ -27,6 +29,7 @@ namespace Silent_Void
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         public SoundEffect sfxShot, sfxShotPlayer, sfxPlayerDeath;
+        SoundEffectInstance backgroundMusic;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -131,6 +134,10 @@ namespace Silent_Void
             coords.AddRange(new List<int>() { 196, 888, 1752, 448, 1080, 460, 392, 140  });
             LevelCount = 4;
 
+            backgroundMusic = this.Content.Load<SoundEffect>("music sfx/fight!").CreateInstance();
+            
+
+
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("music sfx/alien shot");
             sfxShotPlayer = this.Content.Load<SoundEffect>("music sfx/alien death sfx");
@@ -174,6 +181,12 @@ namespace Silent_Void
             }
             else if (gameState == GameState.Overworld)
             {
+               
+                //backgroundMusic.Play(0.8f, 0.0f, 0.0f);
+                if (backgroundMusic.State != SoundState.Playing)
+                {
+                    backgroundMusic.Play();
+                }
                 player.reset();
                 if(winCount == 5)
                 {
@@ -229,7 +242,10 @@ namespace Silent_Void
             }
             if (gameState == GameState.LevelWorld)
             {
-
+                if (backgroundMusic.State != SoundState.Playing)
+                {
+                    backgroundMusic.Play();
+                }
                 if (player.removed)
                 {
                     
