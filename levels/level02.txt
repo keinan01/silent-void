@@ -1,16 +1,16 @@
 bg4
 null
-/en1 5
-/op1 1
+en1 5
+op1 1
 .
-/silo1 1 
-/en1 2 
+silo1 1 
+en1 2 
 .
-/silo1 2 
-/en1 3 
+silo1 2 
+en1 3 
 .
-/silo1 2 
-/op1 1 
+silo1 2 
+op1 1 
 .
-/silo1 4
+silo1 4
 .

@@ -1,16 +1,16 @@
 bg2
 null
-/ba1 6
-/sp1 1
+ba1 6
+sp1 1
 .
-/sp1 3
+sp1 3
 .
-/sp1 2
-/en1 2
+sp1 2
+en1 2
 .
-/sp1 3
-/en1 3
+sp1 3
+en1 3
 .
-/ba1 10
-/sp1 2
+ba1 10
+sp1 2
 .
