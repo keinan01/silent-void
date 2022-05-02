@@ -17,6 +17,8 @@ namespace Silent_Void
         public int speed = 5;
         public float acc = 0.1f;
         public double deviance = 0;
+        public int runradius = 350;
+        public int chaseradius = 450;
         public Enemy(Vector2 pos, float rad) : this(texture, pos, rad)
         {
         }
@@ -27,7 +29,7 @@ namespace Silent_Void
             base.size = new Vector2(72, 72);
             base.pos = pos;
             base.rad = rad;
-            base.hp = 3;
+            base.hp = 5;
             hitBoxSize = size - new Vector2(10, 10);
             friendly = false;
             isBullet = false;
@@ -37,11 +39,11 @@ namespace Silent_Void
         {
             Vector2 target = player.pos - pos;
             rad = (float)(Math.Atan2(target.Y, target.X) + Math.PI);
-            if ((player.pos - pos).Length() < 350)
+            if ((player.pos - pos).Length() < runradius)
             {
                 target = pos - player.pos;
             }
-            if ((player.pos - pos).Length() < 350 || (player.pos - pos).Length() > 450)
+            if ((player.pos - pos).Length() < runradius || (player.pos - pos).Length() > chaseradius)
             {
                 double ang = Math.Atan2(target.Y, target.X);
                 deviance += (rnd.NextDouble() - 0.5) * Math.PI / 6;

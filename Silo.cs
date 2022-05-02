@@ -21,6 +21,8 @@ namespace Silent_Void
             cooldown = rnd.Next(500);
             speed = 2;
             hp = 10;
+            runradius = 750;
+            chaseradius = 850;
         }
         public override void Shoot(Vector2 pos, float rad, bool friendly)
         {

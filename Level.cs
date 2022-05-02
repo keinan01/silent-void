@@ -137,27 +137,27 @@ namespace Silent_Void
         {
             for (int i = 0; i < wavePlural[waveNum][1]; i++)
             {
-                game.planes.Add(new OpEnemy(new Vector2(800, 0), 1f));
+                game.planes.Add(new OpEnemy(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][0]; i++)
             {
-                game.planes.Add(new Enemy(new Vector2(800, 0), 1f));
+                game.planes.Add(new Enemy(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][2]; i++)
             {
-                game.planes.Add(new MamaSpider(new Vector2(800, 0), 1f));
+                game.planes.Add(new MamaSpider(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][3]; i++)
             {
-                game.planes.Add(new Spider(new Vector2(800, 0), 1f));
+                game.planes.Add(new Spider(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][4]; i++)
             {
-                game.planes.Add(new SpiderBoss(new Vector2(800, 0), 1f));
+                game.planes.Add(new SpiderBoss(new Vector2(960, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][5]; i++)
             {
-                game.planes.Add(new Silo(new Vector2(800, 0), 1f));
+                game.planes.Add(new Silo(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
             }
             for (int i = 0; i < game.planes.Count; i++)
             {

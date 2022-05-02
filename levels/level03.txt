@@ -1,8 +1,18 @@
-bg2
+bg3
 null
-en1 1
-op1 1
+/op1 2
 .
-en1 3 
-op1 4 
+/en1 2
+/sp1 2
+/ba1 4
+.
+/en1 2
+/silo1 2
+.
+/ba1 4
+/sp1 1
+/silo1 2
+.
+/op1 2
+/silo1 2
 .

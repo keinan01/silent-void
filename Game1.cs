@@ -5,10 +5,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
-
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Media;
 using System.Diagnostics;
 
@@ -37,7 +35,7 @@ namespace Silent_Void
         Hub hub;
         public List<Entity> planes;
         SpriteFont font;
-        Texture2D systemBg, arrow, deathBg, titleBg, overlay, hubBg, highlightTex;
+        Texture2D systemBg, altBg, arrow, deathBg, titleBg, overlay, hubBg, highlightTex;
         Dictionary<string, Texture2D> bgs;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
@@ -48,6 +46,8 @@ namespace Silent_Void
         int arrowCycle, levelCycle, LevelCount, winCount = 0;
         GameState gameState = GameState.TitleScreen;
         Vector2 hpPos = new Vector2(0, 20);
+
+        List<bool> completedLevels = new List<bool>() { false, false, false, false, false };
 
         private Level level;
 
@@ -79,7 +79,7 @@ namespace Silent_Void
             Entity.game = this;
             screen = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             arrowCycle = 0;
-            levelCycle = 1;
+            levelCycle = 0;
             base.Initialize();
 
 
@@ -110,7 +110,10 @@ namespace Silent_Void
             Spider.texture = this.Content.Load<Texture2D>("img/baby");
             SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("img/spider");
 
-            
+            Silo.texture = this.Content.Load<Texture2D>("img/silo");
+            Missile.texture = this.Content.Load<Texture2D>("img/missile");
+            Missile.fireball = this.Content.Load<Texture2D>("img/fireball");
+
 
             hubBg = this.Content.Load<Texture2D>("img/GUI hub");
             highlightTex = this.Content.Load<Texture2D>("img/highlight");
@@ -126,17 +129,16 @@ namespace Silent_Void
             arrow = this.Content.Load<Texture2D>("img/arrow");
             font = this.Content.Load<SpriteFont>("SpriteFont1");
             systemBg = this.Content.Load<Texture2D>("img/sair conglomerate");
+            altBg = this.Content.Load<Texture2D>("img/sair conglomerate alt");
             deathBg = this.Content.Load<Texture2D>("img/deadth screen");
 
             overlay = new Texture2D(GraphicsDevice, 1, 1);
             overlay.SetData(new Color[] { Color.White });
 
-            coords.AddRange(new List<int>() { 196, 888, 1752, 448, 1080, 460, 392, 140  });
+            coords.AddRange(new List<int>() { 196, 888, 1080, 460, 1752, 448, 392, 140 });
             LevelCount = 4;
 
             backgroundMusic = this.Content.Load<SoundEffect>("music sfx/fight!").CreateInstance();
-            
-
 
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("music sfx/alien shot");
@@ -181,20 +183,21 @@ namespace Silent_Void
             }
             else if (gameState == GameState.Overworld)
             {
-               
                 //backgroundMusic.Play(0.8f, 0.0f, 0.0f);
+
+                if (winCount >= 4 && LevelCount < 5)
+                {
+                    systemBg = altBg;
+                    coords.Add(1460);
+                    coords.Add(870);
+                    LevelCount++;
+                }
                 if (backgroundMusic.State != SoundState.Playing)
                 {
                     backgroundMusic.Play();
                 }
                 player.reset();
-                if(winCount == 5)
-                {
-                    systemBg = this.Content.Load<Texture2D>("img/sair conglomerate alt");
-                    coords.Add(1460);
-                    coords.Add(870);
-                    
-                }
+
                 if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
                 {
                     CreateLevel(@"Content\levels\level0" + levelCycle + ".txt");
@@ -204,11 +207,13 @@ namespace Silent_Void
                 {
                     arrowCycle -= 2;
                     levelCycle -= 1;
-                    if (arrowCycle <0)
+                    if (levelCycle < 0)
                     {
                         arrowCycle = coords.Count - 2;
-                        levelCycle = LevelCount;
+                        levelCycle = LevelCount - 1;
                     }
+                    Debug.WriteLine(levelCycle);
+                    Debug.WriteLine(arrowCycle);
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
@@ -216,26 +221,27 @@ namespace Silent_Void
                 {
                     arrowCycle += 2;
                     levelCycle += 1;
-                    if (arrowCycle > coords.Count - 2)
+                    if (levelCycle > LevelCount - 1)
                     {
                         arrowCycle = 0;
-                        levelCycle = 1;
+                        levelCycle = 0;
                     }
+                    Debug.WriteLine(levelCycle);
+                    Debug.WriteLine(arrowCycle);
                     Debug.WriteLine(coords[arrowCycle] + ", " + coords[arrowCycle + 1]);
                     arrowPos = new Vector2(coords[arrowCycle], coords[arrowCycle + 1]);
                 }
                 if (!oldkey.IsKeyDown(Keys.M) && key.IsKeyDown(Keys.M))
                 {
-
                     gameState = GameState.GUIHub;
                 }
 
             }
             if (gameState == GameState.GUIHub)
             {
-                if (!oldkey.IsKeyDown(Keys.Enter) && key.IsKeyDown(Keys.Enter))
-                {
 
+                if (!oldkey.IsKeyDown(Keys.Back) && key.IsKeyDown(Keys.Back))
+                {
                     gameState = GameState.Overworld;
                 }
                 hub.Update();
@@ -246,9 +252,10 @@ namespace Silent_Void
                 {
                     backgroundMusic.Play();
                 }
+
                 if (player.removed)
                 {
-                    
+
                     gameState = GameState.YouDied;
 
 
@@ -260,7 +267,7 @@ namespace Silent_Void
                     {
                         if (planes[i].collides(planes[j]) && i != j && !(planes[i].isBullet && planes[j].isBullet) && planes[i].friendly != planes[j].friendly && !planes[i].invincible && !planes[j].invincible)
                         {
-                            
+
                             planes[i].OnHit();
                             planes[j].OnHit();
                             player.points += 100;
@@ -292,16 +299,26 @@ namespace Silent_Void
                 {
                     level.startWave();
                 }
-                
 
-
+                if (key.IsKeyDown(Keys.Back))
+                {
+                    gameState = GameState.Overworld;
+                    planes = new List<Entity>();
+                    planes.Add(player);
+                }
             }
             if (gameState == GameState.EndLevel)
             {
                 if (key.IsKeyDown(Keys.Back))
                 {
-                    winCount++;
+                    if (!completedLevels[levelCycle])
+                    {
+                        winCount++;
+                        completedLevels[levelCycle] = true;
+                    }
                     gameState = GameState.Overworld;
+                    planes = new List<Entity>();
+                    planes.Add(player);
                 }
             }
 

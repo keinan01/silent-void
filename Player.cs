@@ -119,16 +119,16 @@ namespace Silent_Void
                 iframe = 0;
                 invincible = false;
             }
+
+            base.Update();
             if (iframe % 4 >= 2)
             {
-                base.colour = Color.Black;
+                base.colour = Color.Red;
             }
             else
             {
                 base.colour = Color.White;
             }
-
-            base.Update();
         }
 
         public override void OnHit()

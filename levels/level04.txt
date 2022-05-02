@@ -1,7 +1,4 @@
-bg3
+bg
 null
-en1 1
-.
-en1 5 
-op1 3
+boss1 1
 .
