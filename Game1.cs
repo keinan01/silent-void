@@ -22,12 +22,13 @@ namespace Silent_Void
         GUIHub,
         YouDied,
         TitleScreen,
-        EndLevel
+        EndLevel,
+        Credits
     }
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         public SoundEffect sfxShot, sfxShotPlayer, sfxPlayerDeath;
-        SoundEffectInstance backgroundMusic;
+        SoundEffectInstance backgroundMusic, bossMusic;
         KeyboardState oldkey = Keyboard.GetState();
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -35,7 +36,7 @@ namespace Silent_Void
         Hub hub;
         public List<Entity> planes;
         SpriteFont font;
-        Texture2D systemBg, altBg, arrow, deathBg, titleBg, overlay, hubBg, highlightTex;
+        Texture2D systemBg, altBg, arrow, deathBg, titleBg, overlay, hubBg, highlightTex, creditScreen;
         Dictionary<string, Texture2D> bgs;
         Texture2D playerTex;
         public Texture2D bullet, enemyBullet;
@@ -46,7 +47,7 @@ namespace Silent_Void
         int arrowCycle, levelCycle, LevelCount, winCount = 0;
         GameState gameState = GameState.TitleScreen;
         Vector2 hpPos = new Vector2(0, 20);
-
+        
         List<bool> completedLevels = new List<bool>() { false, false, false, false, false };
 
         private Level level;
@@ -114,7 +115,7 @@ namespace Silent_Void
             Missile.texture = this.Content.Load<Texture2D>("img/missile");
             Missile.fireball = this.Content.Load<Texture2D>("img/fireball");
 
-
+            creditScreen = this.Content.Load<Texture2D>("img/credits");
             hubBg = this.Content.Load<Texture2D>("img/GUI hub");
             highlightTex = this.Content.Load<Texture2D>("img/highlight");
             hub = new Hub(hubBg, highlightTex);
@@ -139,12 +140,12 @@ namespace Silent_Void
             LevelCount = 4;
 
             backgroundMusic = this.Content.Load<SoundEffect>("music sfx/fight!").CreateInstance();
-
+            bossMusic = this.Content.Load<SoundEffect>("music sfx/boss fight").CreateInstance();
             arrowPos = new Vector2(coords[0], coords[1]);
             sfxShot = this.Content.Load<SoundEffect>("music sfx/alien shot");
             sfxShotPlayer = this.Content.Load<SoundEffect>("music sfx/alien death sfx");
             sfxPlayerDeath = this.Content.Load<SoundEffect>("music sfx/death sfx");
-            
+
 
 
             // TODO: use this.Content to load your game content here
@@ -248,11 +249,15 @@ namespace Silent_Void
             }
             if (gameState == GameState.LevelWorld)
             {
-                if (backgroundMusic.State != SoundState.Playing)
+                if (backgroundMusic.State != SoundState.Playing && !level.isBoss)
                 {
                     backgroundMusic.Play();
                 }
-
+                if (bossMusic.State != SoundState.Playing && level.isBoss)
+                {
+                    backgroundMusic.Stop();
+                    bossMusic.Play();
+                }
                 if (player.removed)
                 {
 
@@ -309,6 +314,7 @@ namespace Silent_Void
             }
             if (gameState == GameState.EndLevel)
             {
+                
                 if (key.IsKeyDown(Keys.Back))
                 {
                     if (!completedLevels[levelCycle])
@@ -320,27 +326,43 @@ namespace Silent_Void
                     planes = new List<Entity>();
                     planes.Add(player);
                 }
+
+                if (completedLevels.TrueForAll(isTrue))
+                {
+                    gameState = GameState.Credits;
+                }
             }
 
             if (gameState == GameState.YouDied)
             {
+                if (backgroundMusic.State == SoundState.Playing)
+                {
+                    backgroundMusic.Stop();
+                }
+                if (level.isBoss)
+                {
+                    bossMusic.Stop();
+                }
                 if (key.IsKeyDown(Keys.Back))
                 {
                     hub.resetShop();
                     gameState = GameState.Overworld;
                     planes = new List<Entity>();
                     planes.Add(Entity.player = player = new Player(playerTex, screen / 2, rotationRadians));
-                    
+
                 }
-                
-               
+
+
             }
             // TODO: Add your update logic here
             oldkey = key;
 
             base.Update(gameTime);
         }
-
+        private static bool isTrue(bool t)
+        {
+            return t;
+        }
         public void Add(Entity e)
         {
             planes.Add(e);
@@ -390,12 +412,15 @@ namespace Silent_Void
             }
             if (gameState == GameState.EndLevel)
             {
-                
+
                 GraphicsDevice.Clear(Color.Black);
                 spriteBatch.DrawString(font, "Level End!!! \n press Backspace to enter overworld", new Vector2(1920 / 2, 1080 / 2), Color.White);
                 spriteBatch.DrawString(font, player.points.ToString(), new Vector2(1920 / 2, (1080 / 2) + 50), Color.White);
             }
-
+            if (gameState == GameState.Credits)
+            {
+                spriteBatch.Draw(creditScreen, new Rectangle(0, 0, 1920, 1080), Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
