@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +15,7 @@ namespace Silent_Void
     {
         Game1 game;
         int enemies, OpEnemies, spiders, babies, boss, silo;
+        public bool isBoss = false;
         public string bg, music;
         int[] wave = new int[3];
         public List<int[]> wavePlural = new List<int[]>();
@@ -104,7 +105,7 @@ namespace Silent_Void
                 }
                 if (word[0].Equals("boss1"))
                 {
-
+                    isBoss = true;
                     boss += int.Parse(word[1]);
                 }
                 if (word[0].Equals("silo1"))
@@ -137,27 +138,27 @@ namespace Silent_Void
         {
             for (int i = 0; i < wavePlural[waveNum][1]; i++)
             {
-                game.planes.Add(new OpEnemy(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
+                game.planes.Add(new OpEnemy(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][0]; i++)
             {
-                game.planes.Add(new Enemy(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
+                game.planes.Add(new Enemy(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][2]; i++)
             {
-                game.planes.Add(new MamaSpider(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
+                game.planes.Add(new MamaSpider(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][3]; i++)
             {
-                game.planes.Add(new Spider(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
+                game.planes.Add(new Spider(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][4]; i++)
             {
-                game.planes.Add(new SpiderBoss(new Vector2(960, 0), 1f));
+                game.planes.Add(new SpiderBoss(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < wavePlural[waveNum][5]; i++)
             {
-                game.planes.Add(new Silo(new Vector2(Enemy.rnd.Next(1920), 0), 1f));
+                game.planes.Add(new Silo(new Vector2(800, 0), 1f));
             }
             for (int i = 0; i < game.planes.Count; i++)
             {
