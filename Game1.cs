@@ -107,6 +107,7 @@ namespace Silent_Void
             bgs.Add("bg2", this.Content.Load<Texture2D>("img/bg2"));
             bgs.Add("bg3", this.Content.Load<Texture2D>("img/bg3"));
             bgs.Add("bg4", this.Content.Load<Texture2D>("img/bg4"));
+            bgs.Add("bg5", this.Content.Load<Texture2D>("img/bg5"));
 
             Spider.texture = this.Content.Load<Texture2D>("img/baby");
             SpiderBoss.texture = MamaSpider.texture = this.Content.Load<Texture2D>("img/spider");
