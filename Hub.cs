@@ -152,5 +152,34 @@ namespace Silent_Void
            
 
         }
+
+        public void resetShop()
+        {
+            for (int i = 0; i < items.GetLength(0); i++)
+            {
+
+                for (int e = 0; e < items.GetLength(1); e++)
+                {
+
+                    items[i, e] = new Item(Item.ItemType.Null);
+                    items[i, e].setPos(new Rectangle(rectPosX, rectPosY, 64, 64));
+
+                }
+
+
+            }
+
+            items[0, 0] = new Item(Item.ItemType.HPBuff);
+            items[0, 0].setPos(grid[0, 0]);
+            items[1, 0] = new Item(Item.ItemType.AtkBuff);
+            items[1, 0].setPos(grid[1, 0]);
+            for (int i = 0; i < items.GetLength(0); i++)
+            {
+                for (int e = 0; e < items.GetLength(1); e++)
+                {
+
+                }
+            }
+        }
     }
 }
